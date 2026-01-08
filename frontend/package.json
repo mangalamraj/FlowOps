@@ -29,6 +29,7 @@
     "react-countup": "^6.5.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.70.0",
+    "react-hot-toast": "^2.6.0",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.3.5"
   },

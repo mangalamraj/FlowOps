@@ -1,6 +1,9 @@
 "use client";
 import { Plus, Upload } from "lucide-react";
 import { Button } from "../ui/button";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+
 import {
   Dialog,
   DialogContent,
@@ -22,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
+import { useState } from "react";
 
 const formSchema = z.object({
   file: z
@@ -34,8 +38,10 @@ const Header = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+  const [open, setOpen] = useState(false);
 
   const fileRef = form.register("file");
+  const router = useRouter();
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const file = data.file[0];
@@ -58,8 +64,18 @@ const Header = () => {
         },
       );
       if (response) {
+        toast.success("Success!");
+        router.replace("/");
+        setOpen(false);
+
+        // ✅ WAIT FOR MODAL ANIMATION TO FINISH
+        setTimeout(() => {
+          window.location.reload(); // or router.refresh() if server cached
+        }, 150);
+
         console.log(response);
       } else {
+        toast.error("Error while uploading the data!");
         console.log("Upload failed");
       }
     } catch (err) {
@@ -74,7 +90,7 @@ const Header = () => {
           <div className="text-sm md:text-base">Manage Your Orders</div>
         </div>
         <div className="flex gap-2">
-          <Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button className="bg-blue-800 text-white hover:text-black cursor-pointer">
                 <span className="flex items-center gap-2">
@@ -119,6 +135,7 @@ const Header = () => {
             </DialogContent>
           </Dialog>
         </div>
+        <Toaster />
       </div>
     </>
   );
