@@ -4,10 +4,11 @@ export const createOrderTable = async () => {
   const createTableQuery = `
         CREATE TABLE IF NOT EXISTS orders (
           id SERIAL PRIMARY KEY,
-          sku VARCHAR(255),
-          warehouse VARCHAR(255),
-          status VARCHAR(255),
-          createdAT TIMESTAMP,
+          orderId VARCHAR(255) UNIQUE NOT NULL,
+          sku VARCHAR(255) NOT NULL,
+          warehouse VARCHAR(255) NOT NULL,
+          status VARCHAR(255) NOT NULL,
+          createdAT TIMESTAMP NOT NULL,
           shippedAT TIMESTAMP
         )
       `;

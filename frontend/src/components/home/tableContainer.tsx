@@ -59,6 +59,20 @@ const TableContainer = () => {
               <ClockFading size={18} />
               Pending
             </CardTitle>
+            <div className="text-2xl text-green-400 font- leading-none">
+              <CountUp
+                start={0}
+                end={counts.pending}
+                duration={2.75}
+                separator=" "
+              >
+                {({ countUpRef, start }) => (
+                  <div>
+                    <span ref={countUpRef} />
+                  </div>
+                )}
+              </CountUp>{" "}
+            </div>
           </CardHeader>
 
           <CardContent className="text-sm text-muted-foreground">
