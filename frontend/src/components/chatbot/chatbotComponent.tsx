@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useRef, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import CryptoJS from "crypto-js";
 
 type Tmessages = {
@@ -24,6 +25,7 @@ type Tmessages = {
 const ChatBotPopUp = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Tmessages[]>([]);
+  const [loading, setLoading] = useState(false);
   const messageRef = useRef<HTMLDivElement | null>(null);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +53,8 @@ const ChatBotPopUp = () => {
     const encryptedInput = encryptData(input, secretKey);
 
     try {
-      const response = await fetch("http://localhost:8000/personalChat", {
+      setLoading(true);
+      const response = await fetch("http://localhost:8000/bot/getresponse", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,9 +68,10 @@ const ChatBotPopUp = () => {
           ...prevMessages,
           {
             type: "bot",
-            message: data.responseMessage,
+            message: data.summary,
           },
         ]);
+        setLoading(false);
       } else {
         setMessages((prevMessages) => [
           ...prevMessages,
@@ -87,6 +91,8 @@ const ChatBotPopUp = () => {
           message: "Sorry, something went wrong. Please try again.",
         },
       ]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,7 +100,7 @@ const ChatBotPopUp = () => {
     setMessages((prevMessages) => [
       {
         type: "bot",
-        message: "Put your order id here",
+        message: "Put your order id/sku/warehouse here",
       },
     ]);
   }, []);
@@ -104,20 +110,33 @@ const ChatBotPopUp = () => {
   }, [messages]);
 
   const renderMessages = () => {
-    return messages.map((msg, index) => (
-      <div
-        key={index}
-        className={cn(
-          "p-2 mx-2 my-2 min-w-[45px] max-w-[75%] rounded-lg text-sm",
-          msg.type === "user"
-            ? "bg-blue-500 self-end text-white"
-            : "bg-gray-200 self-start text-black",
+    return (
+      <>
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={cn(
+              "p-2 mx-2 my-2 min-w-[45px] max-w-[75%] rounded-lg text-sm",
+              msg.type === "user"
+                ? "bg-blue-500 self-end text-white"
+                : "bg-gray-200 self-start text-black",
+            )}
+          >
+            <p className="whitespace-pre-wrap">{msg.message}</p>
+          </div>
+        ))}
+
+        {loading && (
+          <div
+            className={cn(
+              "p-2 mx-2 my-2 min-w-[45px] max-w-[75%] rounded-lg text-sm bg-gray-200 self-start text-black",
+            )}
+          >
+            <Spinner />
+          </div>
         )}
-        style={{ overflowAnchor: "auto" }}
-      >
-        <p className="flex justify-center">{msg.message}</p>
-      </div>
-    ));
+      </>
+    );
   };
 
   return (

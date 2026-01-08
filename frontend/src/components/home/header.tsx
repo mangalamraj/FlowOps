@@ -74,10 +74,6 @@ const Header = () => {
           <div className="text-sm md:text-base">Manage Your Orders</div>
         </div>
         <div className="flex gap-2">
-          <Button variant={"outline"} className="cursor-pointer">
-            <Upload></Upload>
-            <div className="hidden md:block">Import</div>
-          </Button>
           <Dialog>
             <DialogTrigger asChild>
               <Button className="bg-blue-800 text-white hover:text-black cursor-pointer">

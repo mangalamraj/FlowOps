@@ -7,6 +7,7 @@ import {
   RefreshCcw,
   Search,
   Truck,
+  Upload,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "../ui/input";
@@ -30,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { convertToCSV } from "./csvHelper";
 
 // interface DataTableProps<TData, TValue> {
 //   columns: ColumnDef<TData, TValue>[];
@@ -111,6 +113,24 @@ const TableContainer = () => {
       setPageIndex(next.pageIndex);
     },
   });
+  const downloadCSV = () => {
+    if (!tableData.length) return;
+
+    const csv = convertToCSV(tableData);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.setAttribute("download", `orders_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex flex-col gap-4 md:gap-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
@@ -259,6 +279,16 @@ const TableContainer = () => {
           </div>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={downloadCSV}
+            disabled={!tableData.length}
+          >
+            <Upload />
+            <div className="hidden md:block">Export to CSV</div>
+          </Button>
+
           <Button
             className="bg-blue-800 text-white hover:text-black cursor-pointer"
             onClick={fetchOrders}
