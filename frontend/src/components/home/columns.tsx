@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Order>[] = [
   {
-    accessorKey: "order_id",
+    accessorKey: "orderid",
     header: "Order ID",
   },
   {
@@ -22,33 +22,33 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
 
-      // const color =
-      //   status === "shipped"
-      //     ? "text-green-600"
-      //     : status === "pending"
-      //       ? "text-yellow-600"
-      //       : "text-red-600";
-
       const statusStyles: Record<string, string> = {
         shipped: "bg-green-400/50 text-white",
         pending: "bg-yellow-400/70 text-white",
-        delayed: "bg-red-400/50 text-white",
+        delayed: "bg-orange-400/70 text-white",
+        rejected: "bg-red-400/70 text-white",
       };
       return (
-        <Badge className={`font-medium ${statusStyles[status]}`}>
-          {status}
+        <Badge className={`text-xs font-semibold  ${statusStyles[status]}`}>
+          {status.toUpperCase()}
         </Badge>
       );
     },
   },
   {
-    accessorKey: "created_at",
+    accessorKey: "createdat",
     header: "Created At",
-    cell: ({ row }) => new Date(row.getValue("created_at")).toLocaleString(),
+    cell: ({ row }) => {
+      const value = row.getValue("createdat") as string;
+      return new Date(value).toLocaleString();
+    },
   },
   {
-    accessorKey: "shipped_at",
+    accessorKey: "shippedat",
     header: "Shipped At",
-    cell: ({ row }) => new Date(row.getValue("shipped_at")).toLocaleString(),
+    cell: ({ row }) => {
+      const value = row.getValue("shippedat") as string | null;
+      return value ? new Date(value).toLocaleString() : "Not shipped";
+    },
   },
 ];

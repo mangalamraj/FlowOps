@@ -4,19 +4,23 @@ import {
   ClockAlert,
   ClockFading,
   GitPullRequestClosed,
+  RefreshCcw,
   Search,
   Truck,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import CountUp from "react-countup";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
-  ColumnDef,
+  // ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { data } from "./data";
 import { columns } from "./columns";
 import {
   Table,
@@ -27,46 +31,129 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
+// interface DataTableProps<TData, TValue> {
+//   columns: ColumnDef<TData, TValue>[];
+//   data: TData[];
+// }
 
 const TableContainer = () => {
+  const [tableData, setTableData] = useState<any[]>([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const pageSize = 10;
+
+  const [loading, setLoading] = useState(false);
+  const [counts, setCount] = useState({
+    shipped: 0,
+    pending: 0,
+    delayed: 0,
+    rejected: 0,
+  });
+  const [filters, setFilters] = useState({
+    orderid: "",
+    sku: "",
+    warehouse: "",
+    shippedat: "",
+  });
+  const handleChange =
+    (key: keyof typeof filters) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFilters((prev) => ({
+        ...prev,
+        [key]: e.target.value,
+      }));
+    };
+
+  const fetchOrders = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/table/all`,
+        {
+          params: {
+            orderid: filters.orderid || undefined,
+            sku: filters.sku || undefined,
+            warehouse: filters.warehouse || undefined,
+            shippedat: filters.shippedat || undefined,
+          },
+        },
+      );
+
+      setTableData(res.data.rows);
+      setCount(res.data.counts);
+      setPageIndex(0);
+    } catch (err) {
+      console.error("Failed to fetch orders", err);
+      setTableData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
+    },
+    onPaginationChange: (updater) => {
+      const next =
+        typeof updater === "function"
+          ? updater({ pageIndex, pageSize })
+          : updater;
+      setPageIndex(next.pageIndex);
+    },
   });
   return (
     <div className="flex flex-col gap-4 md:gap-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
         <Card className="w-full">
-          <CardHeader className="md:pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Truck size={18} />
+          <CardHeader className="px-4 pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Truck size={16} />
               Shipped
             </CardTitle>
+            <div className="text-4xl text-green-400 font-semibold leading-none">
+              <CountUp
+                start={0}
+                end={counts.shipped}
+                duration={2.75}
+                separator=" "
+              >
+                {({ countUpRef }) => (
+                  <div>
+                    <span ref={countUpRef} />
+                  </div>
+                )}
+              </CountUp>
+            </div>
           </CardHeader>
-
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
             Orders successfully shipped
           </CardContent>
         </Card>
+
         <Card className="w-full">
-          <CardHeader className="md:pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
+          <CardHeader className="px-4 pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm">
               <ClockFading size={18} />
               Pending
             </CardTitle>
-            <div className="text-2xl text-green-400 font- leading-none">
+            <div className="text-4xl text-yellow-400 font-semibold leading-none">
               <CountUp
                 start={0}
                 end={counts.pending}
                 duration={2.75}
                 separator=" "
               >
-                {({ countUpRef, start }) => (
+                {({ countUpRef }) => (
                   <div>
                     <span ref={countUpRef} />
                   </div>
@@ -75,31 +162,59 @@ const TableContainer = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
             Orders Pending
           </CardContent>
         </Card>
         <Card className="w-full ">
-          <CardHeader className="md:pb-2">
+          <CardHeader className="px-4 pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <ClockAlert size={18} />
               Delayed
             </CardTitle>
+            <div className="text-4xl text-orange-600 font-semibold leading-none">
+              <CountUp
+                start={0}
+                end={counts.delayed}
+                duration={2.75}
+                separator=" "
+              >
+                {({ countUpRef }) => (
+                  <div>
+                    <span ref={countUpRef} />
+                  </div>
+                )}
+              </CountUp>{" "}
+            </div>
           </CardHeader>
 
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
             Orders Delayed
           </CardContent>
         </Card>
         <Card className="w-full ">
-          <CardHeader className="md:pb-2">
+          <CardHeader className="px-4 pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <GitPullRequestClosed size={18} />
               Rejected
             </CardTitle>
+            <div className="text-4xl text-red-600 font-semibold leading-none">
+              <CountUp
+                start={0}
+                end={counts.rejected}
+                duration={2.75}
+                separator=" "
+              >
+                {({ countUpRef }) => (
+                  <div>
+                    <span ref={countUpRef} />
+                  </div>
+                )}
+              </CountUp>{" "}
+            </div>
           </CardHeader>
 
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
             Orders Rejected
           </CardContent>
         </Card>
@@ -107,34 +222,58 @@ const TableContainer = () => {
       <div className="flex items-end justify-between">
         <div className="flex overflow-scroll gap-4">
           <div className="flex flex-col gap-1 md:gap-2 min-w-45">
-            <div>Order Id</div>
+            <div className="text-sm md:text-base">Order Id</div>
             <Input
-              className="focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none border-0"
+              className="focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none border-0 text-sm md:text-base"
               placeholder="ORD-1001"
+              value={filters.orderid}
+              onChange={handleChange("orderid")}
             ></Input>
           </div>
           <div className="flex flex-col gap-1 md:gap-2 min-w-45">
-            <div>SKU</div>
+            <div className="text-sm md:text-base">SKU</div>
             <Input
               placeholder="SKU-AX12"
-              className="focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none border-0"
+              value={filters.sku}
+              onChange={handleChange("sku")}
+              className="focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none border-0 text-sm md:text-base"
             ></Input>
           </div>
           <div className="flex flex-col gap-1 md:gap-2 min-w-45">
-            <div>Warehouse</div>
+            <div className="text-sm md:text-base">Warehouse</div>
             <Input
-              className="focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none border-0"
+              className="focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none border-0 text-sm md:text-base"
               placeholder="DEL-02"
+              value={filters.warehouse}
+              onChange={handleChange("warehouse")}
             ></Input>
           </div>
           <div className="flex flex-col gap-1 md:gap-2">
-            <div>Shipped At</div>
-            <Input type="date"></Input>
+            <div className="text-sm md:text-base">Shipped At</div>
+            <Input
+              type="date"
+              className="text-sm md:text-base"
+              value={filters.shippedat}
+              onChange={handleChange("shippedat")}
+            ></Input>
           </div>
         </div>
-        <Button className="bg-blue-800 text-white hover:text-black cursor-pointer">
-          <Search /> Search
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            className="bg-blue-800 text-white hover:text-black cursor-pointer"
+            onClick={fetchOrders}
+          >
+            <Search /> Search
+          </Button>
+          <Button
+            variant={"ghost"}
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            <RefreshCcw />
+          </Button>
+        </div>
       </div>
       <div>
         <div className="overflow-hidden rounded-md border">
@@ -157,7 +296,16 @@ const TableContainer = () => {
             </TableHeader>
 
             <TableBody>
-              {table.getRowModel().rows.length ? (
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
@@ -182,6 +330,31 @@ const TableContainer = () => {
               )}
             </TableBody>
           </Table>
+          <div className="flex w-full items-center justify-between px-2 py-3 text-sm">
+            <div>
+              Page {pageIndex + 1} of {table.getPageCount()}
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!table.getCanPreviousPage()}
+                onClick={() => table.previousPage()}
+              >
+                Previous
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!table.getCanNextPage()}
+                onClick={() => table.nextPage()}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </div>{" "}
       </div>
     </div>
