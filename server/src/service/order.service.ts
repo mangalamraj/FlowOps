@@ -33,8 +33,7 @@ export const getAllOrdersService = async (
 
   if (shippedat) {
     filterValues.push(shippedat);
-    console.log(shippedat);
-    whereClause.push(`shippedAT::date = $${filterValues.length}`);
+    whereClause.push(`shippedat::date = $${filterValues.length}`);
   }
 
   const whereSQL =
