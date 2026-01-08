@@ -54,13 +54,16 @@ const ChatBotPopUp = () => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8000/bot/getresponse", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bot/getresponse`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ encryptedmessage: encryptedInput }),
         },
-        body: JSON.stringify({ encryptedmessage: encryptedInput }),
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
