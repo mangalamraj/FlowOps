@@ -1,4 +1,3 @@
-// types.ts
 export type Order = {
   orderid: string;
   sku: string;
