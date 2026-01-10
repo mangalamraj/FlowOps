@@ -11,6 +11,10 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get("/hi", (req, res) => {
+  return res.json({ message: "hi from flowops(health check)" });
+});
 app.use("/", router);
 
 const PORT = process.env.PORT || 8000;

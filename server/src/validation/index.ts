@@ -14,9 +14,6 @@ export type ValidationResult<T> = {
   invalidRows: { row: any; error: string }[];
 };
 
-/**
- * Joi schema for a single CSV row
- */
 const orderCsvSchema = Joi.object<OrderCsvRow>({
   order_id: Joi.string().trim().required(),
   sku: Joi.string().trim().required(),

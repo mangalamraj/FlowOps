@@ -61,6 +61,13 @@ export const uploadOrders = (req: Request, res: Response) => {
     })
     .on("end", async () => {
       fs.unlinkSync(filePath);
+      const uniqueOrdersMap = new Map<string, OrderCsvRow>();
+
+      for (const row of csvData) {
+        uniqueOrdersMap.set(row.order_id, row);
+      }
+
+      const dedupedCsvData = Array.from(uniqueOrdersMap.values());
 
       try {
         const data = await uploadOrdersService(csvData);
