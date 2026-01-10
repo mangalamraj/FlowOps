@@ -3,7 +3,11 @@ import { Plus, Upload } from "lucide-react";
 import { Button } from "../ui/button";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "../ui/input";
+import { FileDown } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -68,9 +73,8 @@ const Header = () => {
         router.replace("/");
         setOpen(false);
 
-        // ✅ WAIT FOR MODAL ANIMATION TO FINISH
         setTimeout(() => {
-          window.location.reload(); // or router.refresh() if server cached
+          window.location.reload();
         }, 150);
 
         console.log(response);
@@ -90,6 +94,20 @@ const Header = () => {
           <div className="text-sm md:text-base">Manage Your Orders</div>
         </div>
         <div className="flex gap-2">
+          <Tooltip>
+            <TooltipTrigger>
+              <a href="/data.csv" download="data">
+                <Button variant={"outline"} className="cursor-pointer">
+                  <span className="flex items-center gap-2">
+                    <FileDown />
+                    <span className="hidden md:block">Get Sample CSV</span>
+                  </span>
+                </Button>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>Get your sample csv!</TooltipContent>
+          </Tooltip>
+
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button className="bg-blue-800 text-white hover:text-black cursor-pointer">
