@@ -95,7 +95,7 @@ const Header = () => {
         </div>
         <div className="flex gap-2">
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <a href="/data.csv" download="data">
                 <Button variant={"outline"} className="cursor-pointer">
                   <span className="flex items-center gap-2">
