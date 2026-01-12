@@ -146,7 +146,7 @@ const ChatBotPopUp = () => {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          className="fixed flex p-0 justify-center m-4 text-center items-center bottom-0 hover:opacity-75 right-0 h-12 w-12 rounded-full"
+          className="fixed flex p-0 justify-center m-4 text-center items-center bottom-0 hover:opacity-75 right-0 h-12 w-12 rounded-full cursor-pointer"
           aria-label="Open chatbot"
         >
           <Image width={50} height={50} src="/boticon.png" alt="boticon" />
@@ -218,7 +218,7 @@ const ChatBotPopUp = () => {
                 />
                 <Button
                   variant="ghost"
-                  className=" py-0"
+                  className=" py-0 cursor-pointer"
                   disabled={input === ""}
                 >
                   <Send size={20} color="#838383" />
