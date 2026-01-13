@@ -1,5 +1,5 @@
 "use client";
-import { Plus, Upload } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
