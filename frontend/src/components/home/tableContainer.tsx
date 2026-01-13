@@ -10,6 +10,11 @@ import {
   Upload,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CountUp from "react-countup";
@@ -33,6 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { convertToCSV } from "./csvHelper";
+import PopoverContentComponent from "./popoverContainer";
 
 // interface DataTableProps<TData, TValue> {
 //   columns: ColumnDef<TData, TValue>[];
@@ -78,7 +84,7 @@ const TableContainer = () => {
             warehouse: filters.warehouse || undefined,
             shippedat: filters.shippedat || undefined,
           },
-        },
+        }
       );
 
       setTableData(res.data.rows);
@@ -318,10 +324,11 @@ const TableContainer = () => {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   ))}
+                  <TableHead key={headerGroup.id}>Add Tags</TableHead>
                 </TableRow>
               ))}
             </TableHeader>
@@ -338,15 +345,30 @@ const TableContainer = () => {
                 </TableRow>
               ) : table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow key={row.id} className="cursor-pointer">
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     ))}
+                    <TableCell key={row.id}>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className="cursor-pointer"
+                          >
+                            Add Tags
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverContentComponent />
+                        </PopoverContent>
+                      </Popover>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
