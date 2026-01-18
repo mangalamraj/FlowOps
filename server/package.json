@@ -20,16 +20,22 @@
     "@types/joi": "^17.2.3",
     "@types/multer": "^2.0.0",
     "@types/pg": "^8.16.0",
+    "axios": "^1.13.2",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-fileupload": "^1.5.2",
     "fast-csv": "^5.0.5",
+    "form-data": "^4.0.5",
     "joi": "^18.0.2",
     "multer": "^2.0.2",
     "openai": "^6.15.0",
     "pg": "^8.16.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/express-fileupload": "^1.5.1"
   }
 }

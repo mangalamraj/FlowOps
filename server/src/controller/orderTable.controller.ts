@@ -2,9 +2,12 @@ import { Request, Response } from "express";
 import fs from "fs";
 import { parse } from "fast-csv";
 import {
+  addTagsService,
   getAllOrdersService,
+  getLablesService,
   uploadOrdersService,
 } from "../service/order.service";
+import axios from "axios";
 
 type OrderCsvRow = {
   order_id: string;
@@ -31,7 +34,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
       sku,
       warehouse,
       status,
-      shippedat,
+      shippedat
     );
     return res.status(200).json(data);
   } catch (err) {
@@ -85,4 +88,35 @@ export const uploadOrders = (req: Request, res: Response) => {
           .json({ message: "Error inserting data into the database." });
       }
     });
+};
+
+export const addTags = async (req: Request, res: Response) => {
+  const body = req.body;
+  try {
+    const data = {
+      orderid: body.orderid,
+      tags: body.tags,
+    };
+    const rows = await addTagsService(data);
+    if (rows == 0) {
+      console.log("Now rows got updated");
+      return res.status(400).json({ message: "No rows got updated" });
+    }
+    return res.status(200).json({ message: "Tags got updated" });
+  } catch (err) {
+    console.log("Error while adding tags", err);
+  }
+};
+
+export const getRules = async (req: Request, res: Response) => {
+  const orderid = getStringQuery(req.query.orderid);
+  try {
+    const labelData = await getLablesService(orderid!);
+    console.log(labelData);
+    // const rulesData = await axios.post("http://localhost:8001/get-rules", {
+    //   labelData,
+    // });
+  } catch (err) {
+    console.log("Error getting rules", err);
+  }
 };

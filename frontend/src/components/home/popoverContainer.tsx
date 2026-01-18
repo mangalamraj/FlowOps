@@ -15,81 +15,92 @@ import axios from "axios";
 import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
 
-type Tags = {
-  category: string;
+export type Tags = {
   is_perishable: boolean;
   is_frozen: boolean;
-  needs_label: boolean;
-  needs_barcode: boolean;
-  ships_case: boolean;
-};
+  is_fragile: boolean;
+  is_hazardous: boolean;
 
-const popOverData = [
-  "Perishable",
-  "Frozen",
-  "Needs Label",
-  "Needs Barcode",
-  "Shipcase",
-];
+  has_inner_pack: boolean;
+  has_carton_case: boolean;
+
+  requires_case_shipping_label: boolean;
+  requires_pallet_shipping_label: boolean;
+  requires_shipping_documents: boolean;
+
+  requires_barcode_gtin: boolean;
+  requires_rfid: boolean;
+
+  palletized_item: boolean;
+  retail_ready_display: boolean;
+  direct_store_delivery: boolean;
+};
+const TAG_CONFIG = {
+  Perishable: "is_perishable",
+  Frozen: "is_frozen",
+  Fragile: "is_fragile",
+  Hazardous: "is_hazardous",
+
+  "Inner Pack": "has_inner_pack",
+  "Carton Case": "has_carton_case",
+
+  "Case Shipping Label": "requires_case_shipping_label",
+  "Pallet Shipping Label": "requires_pallet_shipping_label",
+  "Shipping Documents": "requires_shipping_documents",
+
+  Barcode: "requires_barcode_gtin",
+  RFID: "requires_rfid",
+
+  Palletized: "palletized_item",
+  "Retail Ready Display": "retail_ready_display",
+  "Direct Store Delivery": "direct_store_delivery",
+} as const;
+
+const popOverData = Object.keys(TAG_CONFIG);
+
 type PopoverProps = Tags;
 
 const PopoverContentComponent = (props: PopoverProps) => {
   const [input, setInput] = useState("");
-  const [tags, setTags] = useState<Tags>({
-    category: "",
-    is_perishable: props?.is_perishable ?? false,
-    is_frozen: props?.is_frozen ?? false,
-    needs_label: props?.needs_label ?? false,
-    needs_barcode: props?.needs_barcode ?? false,
-    ships_case: props?.ships_case ?? false,
-  });
-  const tagMap: Record<string, boolean> = {
-    Perishable: tags.is_perishable,
-    Frozen: tags.is_frozen,
-    "Needs Label": tags.needs_label,
-    "Needs Barcode": tags.needs_barcode,
-    Shipcase: tags.ships_case,
-  };
+  const [tags, setTags] = useState<Tags>({ ...props });
+
+  const tagMap = Object.entries(TAG_CONFIG).reduce(
+    (acc, [label, key]) => {
+      acc[label] = tags[key];
+      return acc;
+    },
+    {} as Record<string, boolean>,
+  );
+
   function handleAdd() {
+    if (!input) return;
+
+    const key = TAG_CONFIG[input];
+    setTags((prev) => ({ ...prev, [key]: true }));
     setInput("");
-    setTags((prev) => {
-      switch (input) {
-        case "Perishable":
-          return { ...prev, is_perishable: true };
-        case "Frozen":
-          return { ...prev, is_frozen: true };
-        case "Needs Label":
-          return { ...prev, needs_label: true };
-        case "Needs Barcode":
-          return { ...prev, needs_barcode: true };
-        case "Shipcase":
-          return { ...prev, ships_case: true };
-        default:
-          return prev;
-      }
-    });
   }
-  function onSubmit(e: SubmitEvent) {
+
+  async function onSubmit(e: React.FormEvent<HTMLButtonElement>) {
     e.preventDefault();
+
     try {
-      const reponse = axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/addTags`
-      );
-    } catch (e) {}
+      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/table/addTags`, {
+        tags,
+        orderid: props.orderid,
+      });
+    } catch (e) {
+      console.error("Error while updating/inserting the tags");
+    }
   }
+
   return (
     <>
       <div className="flex justify-between mb-4">
-        
-        <Select
-          value={input}
-          onValueChange={(value) => {
-            setInput(value);
-          }}
-        >
-          <SelectTrigger className="w-[220px]">
+        <Select value={input} onValueChange={setInput}>
+          <SelectTrigger className="w-55">
             <SelectValue placeholder="Select Tags" />
           </SelectTrigger>
+
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Tags</SelectLabel>
@@ -103,20 +114,23 @@ const PopoverContentComponent = (props: PopoverProps) => {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Button variant={"ghost"} className="rounded-full" onClick={handleAdd}>
+
+        <Button variant="ghost" className="rounded-full" onClick={handleAdd}>
           <Plus />
         </Button>
       </div>
-      <div className="min-h-8">
-        <div className="flex gap-2 flex-wrap text-xs mb-2">
-          {tags.is_perishable && <Badge>Perishable</Badge>}
-          {tags.is_frozen && <Badge>Frozen</Badge>}
-          {tags.needs_label && <Badge>Needs Label</Badge>}
-          {tags.needs_barcode && <Badge>Needs Barcode</Badge>}
-          {tags.ships_case && <Badge>Shipcase</Badge>}
+
+      <div className="min-h-8 mb-3">
+        <div className="flex gap-2 flex-wrap text-xs">
+          {Object.entries(TAG_CONFIG).map(
+            ([label, key]) => tags[key] && <Badge key={key}>{label}</Badge>,
+          )}
         </div>
       </div>
-      <Button className="w-full">Submit</Button>
+
+      <Button className="w-full" onClick={onSubmit}>
+        Submit
+      </Button>
     </>
   );
 };

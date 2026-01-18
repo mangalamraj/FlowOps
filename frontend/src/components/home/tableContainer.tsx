@@ -20,6 +20,7 @@ import { Button } from "../ui/button";
 import CountUp from "react-countup";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 import {
   // ColumnDef,
@@ -48,6 +49,7 @@ import PopoverContentComponent from "./popoverContainer";
 const TableContainer = () => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
+  const router = useRouter();
   const pageSize = 10;
 
   const [loading, setLoading] = useState(false);
@@ -137,7 +139,6 @@ const TableContainer = () => {
 
     URL.revokeObjectURL(url);
   };
-
   return (
     <div className="flex flex-col gap-4 md:gap-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
@@ -347,7 +348,12 @@ const TableContainer = () => {
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} className="cursor-pointer">
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        onClick={() => {
+                          router.push(`/skurules/${row.original.orderid}`);
+                        }}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -365,7 +371,14 @@ const TableContainer = () => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent>
-                          <PopoverContentComponent />
+                          <PopoverContentComponent
+                            orderid={row.original.orderid}
+                            is_perishable={row.original.tags?.is_perishable}
+                            is_frozen={row.original.tags?.is_frozen}
+                            needs_label={row.original.tags?.needs_label}
+                            needs_barcode={row.original.tags?.needs_barcode}
+                            ships_case={row.original.tags?.ship_case}
+                          />
                         </PopoverContent>
                       </Popover>
                     </TableCell>
