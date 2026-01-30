@@ -9,6 +9,8 @@ import { Label } from "../ui/label";
 import { Order } from "@/types";
 import axios from "axios";
 
+//Todo: make data fetch more optimised by getting tags from userouter from the last page
+
 const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
   const [orderData, setOrderData] = useState<Order>();
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,7 @@ const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
             params: {
               orderid: orderid,
             },
-          }
+          },
         );
         setLoading(false);
         console.log(response.data);

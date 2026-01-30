@@ -86,7 +86,7 @@ const TableContainer = () => {
             warehouse: filters.warehouse || undefined,
             shippedat: filters.shippedat || undefined,
           },
-        }
+        },
       );
 
       setTableData(res.data.rows);
@@ -325,7 +325,7 @@ const TableContainer = () => {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   ))}
@@ -356,7 +356,7 @@ const TableContainer = () => {
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -373,11 +373,47 @@ const TableContainer = () => {
                         <PopoverContent>
                           <PopoverContentComponent
                             orderid={row.original.orderid}
-                            is_perishable={row.original.tags?.is_perishable}
-                            is_frozen={row.original.tags?.is_frozen}
-                            needs_label={row.original.tags?.needs_label}
-                            needs_barcode={row.original.tags?.needs_barcode}
-                            ships_case={row.original.tags?.ship_case}
+                            is_perishable={
+                              row.original.tags?.is_perishable ?? false
+                            }
+                            is_frozen={row.original.tags?.is_frozen ?? false}
+                            is_fragile={row.original.tags?.is_fragile ?? false}
+                            is_hazardous={
+                              row.original.tags?.is_hazardous ?? false
+                            }
+                            has_inner_pack={
+                              row.original.tags?.has_inner_pack ?? false
+                            }
+                            has_carton_case={
+                              row.original.tags?.has_carton_case ?? false
+                            }
+                            requires_case_shipping_label={
+                              row.original.tags?.requires_case_shipping_label ??
+                              false
+                            }
+                            requires_pallet_shipping_label={
+                              row.original.tags
+                                ?.requires_pallet_shipping_label ?? false
+                            }
+                            requires_shipping_documents={
+                              row.original.tags?.requires_shipping_documents ??
+                              false
+                            }
+                            requires_barcode_gtin={
+                              row.original.tags?.requires_barcode_gtin ?? false
+                            }
+                            requires_rfid={
+                              row.original.tags?.requires_rfid ?? false
+                            }
+                            palletized_item={
+                              row.original.tags?.palletized_item ?? false
+                            }
+                            retail_ready_display={
+                              row.original.tags?.retail_ready_display ?? false
+                            }
+                            direct_store_delivery={
+                              row.original.tags?.direct_store_delivery ?? false
+                            }
                           />
                         </PopoverContent>
                       </Popover>

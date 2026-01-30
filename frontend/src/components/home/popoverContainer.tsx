@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
 
 export type Tags = {
+  orderid: string;
   is_perishable: boolean;
   is_frozen: boolean;
   is_fragile: boolean;
