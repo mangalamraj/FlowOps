@@ -2,9 +2,12 @@ import { Request, Response } from "express";
 import fs from "fs";
 import { parse } from "fast-csv";
 import {
+  addTagsService,
   getAllOrdersService,
+  getLablesService,
   uploadOrdersService,
 } from "../service/order.service";
+import axios from "axios";
 
 type OrderCsvRow = {
   order_id: string;
@@ -85,4 +88,39 @@ export const uploadOrders = (req: Request, res: Response) => {
           .json({ message: "Error inserting data into the database." });
       }
     });
+};
+
+export const addTags = async (req: Request, res: Response) => {
+  const body = req.body;
+  try {
+    const data = {
+      orderid: body.orderid,
+      tags: body.tags,
+    };
+    const rows = await addTagsService(data);
+    if (rows == 0) {
+      console.log("Now rows got updated");
+      return res.status(400).json({ message: "No rows got updated" });
+    }
+    return res.status(200).json({ message: "Tags got updated" });
+  } catch (err) {
+    console.log("Error while adding tags", err);
+  }
+};
+
+export const getRules = async (req: Request, res: Response) => {
+  const order_id = getStringQuery(req.query.orderid);
+  try {
+    const data = await getLablesService(order_id!);
+    const labelData = data[0];
+    const Existingtags = labelData.tags;
+    const { orderid, ...newTags } = Existingtags;
+    labelData.tags = newTags;
+    labelData.orderid = order_id;
+    const rulesData = await axios.post("http://localhost:8001/get-rules", {
+      labelData,
+    });
+  } catch (err) {
+    console.log("Error getting rules", err);
+  }
 };

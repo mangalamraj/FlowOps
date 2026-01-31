@@ -10,11 +10,17 @@ import {
   Upload,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CountUp from "react-countup";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 import {
   // ColumnDef,
@@ -33,6 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { convertToCSV } from "./csvHelper";
+import PopoverContentComponent from "./popoverContainer";
 
 // interface DataTableProps<TData, TValue> {
 //   columns: ColumnDef<TData, TValue>[];
@@ -42,6 +49,7 @@ import { convertToCSV } from "./csvHelper";
 const TableContainer = () => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
+  const router = useRouter();
   const pageSize = 10;
 
   const [loading, setLoading] = useState(false);
@@ -131,7 +139,6 @@ const TableContainer = () => {
 
     URL.revokeObjectURL(url);
   };
-
   return (
     <div className="flex flex-col gap-4 md:gap-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
@@ -322,6 +329,7 @@ const TableContainer = () => {
                           )}
                     </TableHead>
                   ))}
+                  <TableHead key={headerGroup.id}>Add Tags</TableHead>
                 </TableRow>
               ))}
             </TableHeader>
@@ -338,15 +346,78 @@ const TableContainer = () => {
                 </TableRow>
               ) : table.getRowModel().rows.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow key={row.id} className="cursor-pointer">
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        onClick={() => {
+                          router.push(`/skurules/${row.original.orderid}`);
+                        }}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
                         )}
                       </TableCell>
                     ))}
+                    <TableCell key={row.id}>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className="cursor-pointer"
+                          >
+                            Add Tags
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <PopoverContentComponent
+                            orderid={row.original.orderid}
+                            is_perishable={
+                              row.original.tags?.is_perishable ?? false
+                            }
+                            is_frozen={row.original.tags?.is_frozen ?? false}
+                            is_fragile={row.original.tags?.is_fragile ?? false}
+                            is_hazardous={
+                              row.original.tags?.is_hazardous ?? false
+                            }
+                            has_inner_pack={
+                              row.original.tags?.has_inner_pack ?? false
+                            }
+                            has_carton_case={
+                              row.original.tags?.has_carton_case ?? false
+                            }
+                            requires_case_shipping_label={
+                              row.original.tags?.requires_case_shipping_label ??
+                              false
+                            }
+                            requires_pallet_shipping_label={
+                              row.original.tags
+                                ?.requires_pallet_shipping_label ?? false
+                            }
+                            requires_shipping_documents={
+                              row.original.tags?.requires_shipping_documents ??
+                              false
+                            }
+                            requires_barcode_gtin={
+                              row.original.tags?.requires_barcode_gtin ?? false
+                            }
+                            requires_rfid={
+                              row.original.tags?.requires_rfid ?? false
+                            }
+                            palletized_item={
+                              row.original.tags?.palletized_item ?? false
+                            }
+                            retail_ready_display={
+                              row.original.tags?.retail_ready_display ?? false
+                            }
+                            direct_store_delivery={
+                              row.original.tags?.direct_store_delivery ?? false
+                            }
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (

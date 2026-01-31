@@ -6,7 +6,7 @@ export const getAllOrdersService = async (
   sku?: string,
   warehouse?: string,
   status?: string,
-  shippedat?: string,
+  shippedat?: string
 ) => {
   const filterValues = [];
   const whereClause = [];
@@ -80,7 +80,7 @@ export const uploadOrdersService = async (csvData: OrderCsvRow[]) => {
   validRows.forEach((order, index) => {
     const baseIndex = index * columns.length;
     placeholders.push(
-      `(${columns.map((_, i) => `$${baseIndex + i + 1}`).join(", ")})`,
+      `(${columns.map((_, i) => `$${baseIndex + i + 1}`).join(", ")})`
     );
     values.push(
       order.order_id,
@@ -88,7 +88,7 @@ export const uploadOrdersService = async (csvData: OrderCsvRow[]) => {
       order.warehouse,
       order.status,
       order.created_at,
-      order.shipped_at || null,
+      order.shipped_at || null
     );
   });
   const dbQuery = `INSERT INTO orders (${columns.join(", ")})
@@ -109,4 +109,24 @@ export const uploadOrdersService = async (csvData: OrderCsvRow[]) => {
     invalidRows,
     data: data,
   };
+};
+
+export const addTagsService = async (data: any) => {
+  const { tags, orderid } = data;
+  const dbQuery = `UPDATE orders SET tags = $1::jsonb WHERE orderid = $2`;
+  const values = [JSON.stringify(tags), orderid];
+  const result = await query(dbQuery, values);
+  if (result.rowCount === 0) {
+    throw new Error(`Order ${orderid} not found`);
+  }
+  return result.rowCount;
+};
+
+export const getLablesService = async (orderid: string) => {
+  const dbQuery = `SELECT tags, sku, status FROM orders WHERE orderid = $1`;
+  const result = await query(dbQuery, [orderid]);
+  if (result.rowCount == 0) {
+    throw new Error(`No orders found with orderid ${orderid}`);
+  }
+  return result.rows;
 };

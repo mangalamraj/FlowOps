@@ -8,6 +8,10 @@ export const createOrderTable = async () => {
           sku VARCHAR(255) NOT NULL,
           warehouse VARCHAR(255) NOT NULL,
           status VARCHAR(255) NOT NULL,
+          tags JSONB,
+          rules JSONB,
+          rulestatus VARCHAR(255),
+          dimensions JSONB,
           createdAT TIMESTAMP NOT NULL,
           shippedAT TIMESTAMP
         )
