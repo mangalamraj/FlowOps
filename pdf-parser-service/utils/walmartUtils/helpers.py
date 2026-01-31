@@ -31,41 +31,51 @@ def extract_heading(pdf_path):
     headings = []
     headingText = []
     headingExists = set()
-    pageExists = set()
-    doc = pymupdf.open(pdf_path)
+
     with pymupdf.open(pdf_path) as doc:
         for page_num, page in enumerate(doc):
             blocks = page.get_text("dict")["blocks"]
+
             for block in blocks:
-                if block["type"]!=0:
+                if block["type"] != 0:
                     continue
+
                 for line in block.get("lines", []):
-                        full_text = " ".join(span.get("text","") for span in line.get("spans",[])).strip() 
-                        norm = clean_pdf_data(full_text)
-                        if any(ignore in norm for ignore in TEXT_TO_IGNORE):
-                            continue
-                        if pattern.search(full_text):
+                    full_text = " ".join(
+                        span.get("text", "") for span in line.get("spans", [])
+                    ).strip()
+
+                    norm = clean_pdf_data(full_text)
+
+                    if any(ignore in norm for ignore in TEXT_TO_IGNORE):
+                        continue
+                    if pattern.search(full_text):
+                        continue
+
+                    max_span = max(line["spans"], key=lambda s: s["size"])
+                    size = max_span["size"]
+                    font = max_span["font"].lower()
+
+                    if (
+                        len(full_text) > 3
+                        and size >= 30
+                        and ("bold" in font or full_text.upper() == full_text)
+                    ):
+                        if full_text in headingExists:
                             continue
 
-                        max_span = max(line["spans"], key=lambda s: s["size"])
-                        size = max_span["size"]
-                        font = max_span["font"].lower()
-                        
-                        if (
-                            len(full_text) > 3 and
-                            size >= 30 and
-                            ("bold" in font or full_text.isupper())                        
-                            ):
-                                if(full_text in headingExists or page_num+1 in pageExists):
-                                    continue
-                                headingExists.add(full_text)
-                                pageExists.add(page_num+1)
-                                headings.append({
-                                            page_num+1:full_text
-                                })
-                                headingText.append(full_text)
-                                
-    return headingText
+                        headingExists.add(full_text)
+                        headingText.append(full_text)
+                        headings.append({
+                            "page": page_num + 1,
+                            "text": full_text
+                        })
+
+    return {
+        "heading_text": headingText,
+        "headings": headings
+    }
+
 
 def normalize_headings(heading: str)->str:
      heading = heading.lower()

@@ -1,4 +1,4 @@
-{
+EXTRACTOBJECT = {
   "is_fragile": {
     "description": "Rules related to fragile or breakable products",
     "headings": [
