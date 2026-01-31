@@ -20,7 +20,6 @@ venv/
 # YOLO / Ultralytics
 # ======================
 runs/
-*.pt
 *.onnx
 *.engine
 
