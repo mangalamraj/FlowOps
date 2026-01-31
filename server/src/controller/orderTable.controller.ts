@@ -34,7 +34,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
       sku,
       warehouse,
       status,
-      shippedat
+      shippedat,
     );
     return res.status(200).json(data);
   } catch (err) {
@@ -109,13 +109,17 @@ export const addTags = async (req: Request, res: Response) => {
 };
 
 export const getRules = async (req: Request, res: Response) => {
-  const orderid = getStringQuery(req.query.orderid);
+  const order_id = getStringQuery(req.query.orderid);
   try {
-    const labelData = await getLablesService(orderid!);
-    console.log(labelData);
-    // const rulesData = await axios.post("http://localhost:8001/get-rules", {
-    //   labelData,
-    // });
+    const data = await getLablesService(order_id!);
+    const labelData = data[0];
+    const Existingtags = labelData.tags;
+    const { orderid, ...newTags } = Existingtags;
+    labelData.tags = newTags;
+    labelData.orderid = order_id;
+    const rulesData = await axios.post("http://localhost:8001/get-rules", {
+      labelData,
+    });
   } catch (err) {
     console.log("Error getting rules", err);
   }

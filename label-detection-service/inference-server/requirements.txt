@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+ultralytics==8.4.9
+torch
+torchvision
+opencv-python
+numpy
+python-multipart

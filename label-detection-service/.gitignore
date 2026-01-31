@@ -1,0 +1,40 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+
+# ======================
+# Virtual Environments
+# ======================
+venv/
+.env
+.env.*
+
+# ======================
+# YOLO / Ultralytics
+# ======================
+runs/
+*.pt
+*.onnx
+*.engine
+
+# ======================
+# Dataset (IMPORTANT)
+# ======================
+datasets/
+data/
+*.zip
+
+# ======================
+# OS / Editor
+# ======================
+.DS_Store
+.idea/
+.vscode/
+*.swp

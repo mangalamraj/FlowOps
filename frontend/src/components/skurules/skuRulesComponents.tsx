@@ -1,12 +1,13 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { Order } from "@/types";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 //Todo: make data fetch more optimised by getting tags from userouter from the last page
@@ -14,6 +15,12 @@ import axios from "axios";
 const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
   const [orderData, setOrderData] = useState<Order>();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  function handleSubmit() {
+    router.push(`/uploadcarton/${orderid}`);
+  }
+
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -54,7 +61,9 @@ const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
           </Card>
         ))}
       </div>
-      <Button className="mt-4 cursor-pointer">Complete VAS</Button>
+      <Button className="mt-4 cursor-pointer" onClick={handleSubmit}>
+        Complete VAS
+      </Button>
     </>
   );
 };
