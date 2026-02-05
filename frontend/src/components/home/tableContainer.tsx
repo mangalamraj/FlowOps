@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Check,
   ClockAlert,
   ClockFading,
   GitPullRequestClosed,
@@ -40,6 +41,7 @@ import {
 } from "@/components/ui/table";
 import { convertToCSV } from "./csvHelper";
 import PopoverContentComponent from "./popoverContainer";
+import { parseFallbackField } from "next/dist/lib/fallback";
 
 // interface DataTableProps<TData, TValue> {
 //   columns: ColumnDef<TData, TValue>[];
@@ -54,10 +56,10 @@ const TableContainer = () => {
 
   const [loading, setLoading] = useState(false);
   const [counts, setCount] = useState({
-    shipped: 0,
+    verified: 0,
     pending: 0,
-    delayed: 0,
-    rejected: 0,
+    notverified: 0,
+    parseFallbackField: 0,
   });
   const [filters, setFilters] = useState({
     orderid: "",
@@ -145,13 +147,13 @@ const TableContainer = () => {
         <Card className="w-full">
           <CardHeader className="px-4 pb-2">
             <CardTitle className="flex items-center gap-2 text-sm">
-              <Truck size={16} />
-              Shipped
+              <Check size={16} />
+              Verified
             </CardTitle>
             <div className="text-4xl text-green-400 font-semibold leading-none">
               <CountUp
                 start={0}
-                end={counts.shipped}
+                end={counts.verified}
                 duration={2.75}
                 separator=" "
               >
@@ -164,7 +166,7 @@ const TableContainer = () => {
             </div>
           </CardHeader>
           <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
-            Orders successfully shipped
+            Orders successfully verified
           </CardContent>
         </Card>
 
@@ -172,7 +174,7 @@ const TableContainer = () => {
           <CardHeader className="px-4 pb-2">
             <CardTitle className="flex items-center gap-2 text-sm">
               <ClockFading size={18} />
-              Pending
+              Rules Pending
             </CardTitle>
             <div className="text-4xl text-yellow-400 font-semibold leading-none">
               <CountUp
@@ -191,19 +193,19 @@ const TableContainer = () => {
           </CardHeader>
 
           <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
-            Orders Pending
+            Pending
           </CardContent>
         </Card>
         <Card className="w-full ">
           <CardHeader className="px-4 pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <ClockAlert size={18} />
-              Delayed
+              Not Verified
             </CardTitle>
             <div className="text-4xl text-orange-600 font-semibold leading-none">
               <CountUp
                 start={0}
-                end={counts.delayed}
+                end={counts.notverified}
                 duration={2.75}
                 separator=" "
               >
@@ -217,19 +219,19 @@ const TableContainer = () => {
           </CardHeader>
 
           <CardContent className="p-3 pt-0 text-xs text-muted-foreground">
-            Orders Delayed
+            Not Verified
           </CardContent>
         </Card>
         <Card className="w-full ">
           <CardHeader className="px-4 pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <GitPullRequestClosed size={18} />
-              Rejected
+              Failed
             </CardTitle>
             <div className="text-4xl text-red-600 font-semibold leading-none">
               <CountUp
                 start={0}
-                end={counts.rejected}
+                end={counts.failed}
                 duration={2.75}
                 separator=" "
               >

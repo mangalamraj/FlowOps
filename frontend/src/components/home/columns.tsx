@@ -23,10 +23,10 @@ export const columns: ColumnDef<Order>[] = [
       const status = row.getValue("status") as string;
 
       const statusStyles: Record<string, string> = {
-        shipped: "bg-green-400/50 text-white",
-        pending: "bg-yellow-400/70 text-white",
-        delayed: "bg-orange-400/70 text-white",
-        rejected: "bg-red-400/70 text-white",
+        verified: "bg-green-400/50 text-white",
+        "rules pending": "bg-yellow-400/70 text-white",
+        "not verified": "bg-orange-400/70 text-white",
+        failed: "bg-red-400/70 text-white",
       };
       return (
         <Badge className={`text-xs font-semibold  ${statusStyles[status]}`}>
