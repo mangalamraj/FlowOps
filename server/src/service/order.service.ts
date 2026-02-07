@@ -6,7 +6,7 @@ export const getAllOrdersService = async (
   sku?: string,
   warehouse?: string,
   status?: string,
-  shippedat?: string
+  shippedat?: string,
 ) => {
   const filterValues = [];
   const whereClause = [];
@@ -42,10 +42,10 @@ export const getAllOrdersService = async (
   const dataQuery = `SELECT * FROM orders ${whereSQL} ORDER BY createdat DESC`;
   const countQuery = `
     SELECT
-      COUNT(*) FILTER (WHERE status = 'shipped')  AS shipped,
-      COUNT(*) FILTER (WHERE status = 'pending')  AS pending,
-      COUNT(*) FILTER (WHERE status = 'delayed')  AS delayed,
-      COUNT(*) FILTER (WHERE status = 'rejected') AS rejected
+      COUNT(*) FILTER (WHERE status = 'verified')  AS verified,
+      COUNT(*) FILTER (WHERE status = 'rules pending')  AS  pending,
+      COUNT(*) FILTER (WHERE status = 'not verified')  AS notverified,
+      COUNT(*) FILTER (WHERE status = 'failed') AS failed
     FROM orders
     ${whereSQL}
   `;
@@ -80,7 +80,7 @@ export const uploadOrdersService = async (csvData: OrderCsvRow[]) => {
   validRows.forEach((order, index) => {
     const baseIndex = index * columns.length;
     placeholders.push(
-      `(${columns.map((_, i) => `$${baseIndex + i + 1}`).join(", ")})`
+      `(${columns.map((_, i) => `$${baseIndex + i + 1}`).join(", ")})`,
     );
     values.push(
       order.order_id,
@@ -88,7 +88,7 @@ export const uploadOrdersService = async (csvData: OrderCsvRow[]) => {
       order.warehouse,
       order.status,
       order.created_at,
-      order.shipped_at || null
+      order.shipped_at || null,
     );
   });
   const dbQuery = `INSERT INTO orders (${columns.join(", ")})

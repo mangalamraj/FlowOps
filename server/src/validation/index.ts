@@ -21,7 +21,7 @@ const orderCsvSchema = Joi.object<OrderCsvRow>({
   status: Joi.string()
     .trim()
     .lowercase()
-    .valid("pending", "shipped", "delayed", "rejected")
+    .valid("not verified", "rules pending", "verified", "failed")
     .required(),
   created_at: Joi.date().iso().required(),
   shipped_at: Joi.date().iso().optional().allow(""),

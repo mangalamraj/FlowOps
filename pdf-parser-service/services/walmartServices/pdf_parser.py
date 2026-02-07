@@ -3,7 +3,7 @@ from services.walmartServices.page_content import get_content
 from db.index import getpdf_details, addpdf_details
 import pymupdf
 
-from db.index import insert_org, getorg_details
+from db.index import insert_org, getpdf_headings
 
 async def extract_pages(pdf_path: str):
     doc = pymupdf.open(pdf_path)
@@ -11,7 +11,7 @@ async def extract_pages(pdf_path: str):
         headings = extract_heading(doc)
         heading_text = headings.get("heading_text", [])
         consolidated_data = consolidate_heading(heading_text)
-        data = await getorg_details("Walmart")
+        data = await getpdf_headings("Walmart")
         if data is None:
             await insert_org("Walmart", headings)
         else:

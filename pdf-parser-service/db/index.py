@@ -38,7 +38,7 @@ async def insert_org(orgname: str, headings: dict):
         )
         return dict(row)
 
-async def getorg_details(orgname:str):
+async def getpdf_headings(orgname:str):
     async with pool.acquire() as conn:
         row = await conn.fetchrow(
             """
@@ -88,7 +88,35 @@ async def getsku_rules(orgid: str):
             return None
         return json.loads(row)
     
-async def addsku_rules(orgid: str, rules: dict, dimensions: dict):
+async def checkorder_status(orderid: str):
+    async with pool.acquire() as conn:
+        result = await conn.fetchval(
+            """
+                SELECT status FROM orders WHERE orderid = $1
+            """,
+            orderid
+        )
+        print(result)
+        if result is None:
+            return None
+        return result
+
+async def changeorder_status(orderid: str, status: str) -> bool:
+    async with pool.acquire() as conn:
+        result = await conn.execute(
+            """
+            UPDATE orders
+            SET status = $1
+            WHERE orderid = $2
+            """,
+            status,
+            orderid
+        )
+
+        return result.endswith("1")
+
+
+async def addsku_rules(orderid: str, rules: dict, dimensions: dict):
     if rules is None or dimensions is None:
         raise ValueError("rules and dimensions cannot be null")
 
@@ -97,12 +125,12 @@ async def addsku_rules(orgid: str, rules: dict, dimensions: dict):
             """
             UPDATE orders
             SET rules = $1, dimensions = $2
-            WHERE orgid = $3
+            WHERE orderid = $3
             RETURNING *
             """,
-            rules,
-            dimensions,
-            orgid
+            json.dumps(rules),
+            json.dumps(dimensions),
+            orderid
         )
 
         if row is None:

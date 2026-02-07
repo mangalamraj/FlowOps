@@ -23,6 +23,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+import { TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 import {
   // ColumnDef,
   flexRender,
@@ -42,6 +44,7 @@ import {
 import { convertToCSV } from "./csvHelper";
 import PopoverContentComponent from "./popoverContainer";
 import { parseFallbackField } from "next/dist/lib/fallback";
+import { Tooltip } from "../ui/tooltip";
 
 // interface DataTableProps<TData, TValue> {
 //   columns: ColumnDef<TData, TValue>[];
@@ -322,7 +325,7 @@ const TableContainer = () => {
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className={``}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -331,7 +334,12 @@ const TableContainer = () => {
                           )}
                     </TableHead>
                   ))}
-                  <TableHead key={headerGroup.id}>Add Tags</TableHead>
+                  <TableHead
+                    key={headerGroup.id}
+                    className="flex justify-center align-middle items-center"
+                  >
+                    Add Tags
+                  </TableHead>
                 </TableRow>
               ))}
             </TableHeader>
@@ -355,6 +363,7 @@ const TableContainer = () => {
                         onClick={() => {
                           router.push(`/skurules/${row.original.orderid}`);
                         }}
+                        className={`${row.original.status === "rules pending" ? "pointer-events-none" : ""}`}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -362,7 +371,30 @@ const TableContainer = () => {
                         )}
                       </TableCell>
                     ))}
-                    <TableCell key={row.id}>
+
+                    <TableCell
+                      key={row.id}
+                      className="flex gap-2 justify-center align-middle"
+                    >
+                      {row?.original?.tags ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="rounded-full text-sm p-1 px-3.5 bg-gray-800 flex items-center">
+                              T
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {Object.entries(row?.original?.tags)
+                              .filter(([key, value]) => value == true)
+                              .map(([key, value], index) => (
+                                <div key={index}>{key}</div>
+                              ))}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <></>
+                      )}
+
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
