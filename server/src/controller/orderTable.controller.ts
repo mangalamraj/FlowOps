@@ -120,6 +120,7 @@ export const getRules = async (req: Request, res: Response) => {
     const rulesData = await axios.post("http://localhost:8001/get-rules", {
       labelData,
     });
+    res.status(200).json(rulesData.data);
   } catch (err) {
     console.log("Error getting rules", err);
   }

@@ -2,6 +2,9 @@ import json
 import os
 from openai import AsyncOpenAI
 from typing import List, Dict
+import asyncio
+from utils.walmartUtils.extractorObject import EXTRACTOBJECT
+from db.index import getpdf_headings, getpdf_details, addsku_rules, changeorder_status
 
 _client = None
 
@@ -16,9 +19,9 @@ def get_openai_client():
 
 async def call_llm(prompt: str) -> dict:
     client = get_openai_client()
-    response = await client.responses.create(
-        model="gpt-4.1-mini",
-        input=prompt,
+    response = await client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
         temperature=0,
         response_format={"type": "json_object"},
     )
@@ -59,7 +62,6 @@ Text:
 {batch["text"]}
 """
     result = await call_llm(prompt)
-
     return {
         "page": batch["page"],
         "rules": result.get("rules", [])
@@ -179,3 +181,69 @@ def validate_dimensions(dimensions: List[Dict]) -> List[Dict]:
         if d.get("value") is not None
         and d.get("constraint") in {"min_distance", "min_size", "max_size", "center_if"}
     ]
+
+
+async def process_rules_background(
+        tags,
+        sku,
+        orderid
+):
+    try:
+        pagenumbers = []
+        headings = []
+
+        for key in tags:
+            if key in EXTRACTOBJECT:
+                headings.extend(EXTRACTOBJECT[key]["headings"])
+
+        db_headings = await getpdf_headings("Walmart")
+        if not db_headings:
+            await changeorder_status(orderid, "failed")
+            return
+        
+        headings_pageno = json.loads(db_headings["headings"])["headings"]
+
+        for item in headings_pageno:
+            if item["text"] in headings:
+                pagenumbers.append(item["page"])
+
+        pdfcontent = await getpdf_details("Walmart")
+        if not pdfcontent:
+            await changeorder_status(orderid, "failed")
+            return
+        
+        selectedcontent = [
+            data for data in pdfcontent if data["page"] in pagenumbers
+        ]
+        print("creating batches")
+        batches = batch_by_page(selectedcontent)
+
+        extracted_batches = await asyncio.gather(
+             *[extract_rules_from_batch(b) for b in batches],
+            return_exceptions=True
+        )       
+        all_rules = dedupe_rules(extracted_batches)
+        print("deduping the rules")
+        if not all_rules:
+            await changeorder_status(orderid, "failed")
+            return
+
+        applicable_rules = await filter_rules_by_sku(all_rules, sku)
+        print("filtering the rules")
+
+
+        classied = await classify_rules(applicable_rules)
+        dimensions = validate_dimensions(classied["dimensionrules"])
+        print("rules sucessfully classied")
+
+        rows = await addsku_rules(orderid, classied, dimensions)
+        if rows is None:
+            await changeorder_status(orderid, "failed")
+            return
+        
+        await changeorder_status(orderid, "rules added")
+        print("rules sucessfully stored to db")
+
+    except Exception as e:
+        print("Background rule extraction failed:", repr(e))
+        await changeorder_status(orderid, "failed")

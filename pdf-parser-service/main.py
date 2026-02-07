@@ -6,9 +6,10 @@ from pathlib import Path
 import json
 from fastapi import FastAPI, UploadFile, File, Body
 from services.walmartServices.pdf_parser import extract_pages
-from services.walmartServices.llm_rules import batch_by_page, extract_rules_from_batch, dedupe_rules, filter_rules_by_sku, classify_rules, validate_dimensions
+from services.walmartServices.llm_rules import batch_by_page, extract_rules_from_batch, dedupe_rules, filter_rules_by_sku, classify_rules, validate_dimensions, process_rules_background
 from utils.walmartUtils.extractorObject import EXTRACTOBJECT
-from db.index import connect_db, close_db, getorg_details, getpdf_details, getsku_rules, addsku_rules
+from db.index import connect_db, close_db, getpdf_headings, getpdf_details, getsku_rules, addsku_rules, changeorder_status, checkorder_status
+from fastapi import BackgroundTasks
 
 
 
@@ -42,64 +43,40 @@ async def categorize_pdf(file: UploadFile = File(...)):
     }
 
 @app.post("/get-rules")
-async def get_rules(data:dict = Body(...)):
+async def get_rules(
+    data: dict = Body(...),
+    background_tasks: BackgroundTasks = None
+):
+
     tags = data['labelData']['tags']
     sku = data['labelData']['sku']
     orderid = data["labelData"]['orderid']
-    pagenumbers = []
-    headings = []
-    for key in tags:
-        if key in EXTRACTOBJECT:
-            for heading in EXTRACTOBJECT[key]['headings']:
-                headings.append(heading)
+    print("PROCESS STARTED FOR RULE EXTRACTION:", orderid)
 
-    db_headings = await getorg_details("Walmart")
 
-    if db_headings is None:
-        return {"message": "Headings does not exists"}
-    headings_pageno = json.loads(db_headings["headings"])["headings"]
-    for item in headings_pageno:
-        if  item['text'] in headings:
-            pagenumbers.append(item['page'])
-
-    pdfcontent = await getpdf_details("Walmart")
     existingRules = await getsku_rules(orderid)
-    if(getsku_rules!=None):
-        return {
-            "rules": existingRules['rules'],
-            "dimensionrules": existingRules['dimensionrules']
+    if existingRules:
+        return{
+            "rules": existingRules["rules"],
+            "dimensionrules": existingRules["dimensionrules"]
         }
-    if(pdfcontent is None):
-        return {"status": "failed", "message": "PDF content not found in the db"}
-    
-    selectedcontent = []
-    for number in pagenumbers:
-        for data in pdfcontent:
-            if data["page"] ==  number:
-                selectedcontent.append(data)
-    
-    batches = batch_by_page(selectedcontent)
-    
+    orderstatus = await checkorder_status(orderid=orderid)
+    if orderstatus=="rules pending":
+        return {"status": "rules pending"}
+    if orderstatus in ("not verified", "failed"):
+        background_tasks.add_task(
+            process_rules_background,
+            tags,
+            sku,
+            orderid
+        )
 
-    extracted_batches = await asyncio.gather(
-        *[extract_rules_from_batch(b) for b in batches]
-    )
 
-    all_rules = dedupe_rules(extracted_batches)
-
-    if not all_rules:
-        return {"status": "ok", "data": {"rules": [], "labelrules": []}}
-    
-
-    applicable_rules = await filter_rules_by_sku(all_rules, sku)
-
-    classified = await classify_rules(applicable_rules)
-    dimensions = validate_dimensions(classified['dimensionrules'])
-    rows = await addsku_rules(orderid, classified, dimensions)
-    
-
-    return {"status": "ok"}
-
+    return{
+        "status":"rules pending",
+        "orderid": orderid
+    }
+        
 
 if __name__ == "__main__":
     import uvicorn
