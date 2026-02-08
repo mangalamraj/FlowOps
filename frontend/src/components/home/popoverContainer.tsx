@@ -61,7 +61,7 @@ const popOverData = Object.keys(TAG_CONFIG);
 type PopoverProps = Tags;
 
 const PopoverContentComponent = (props: PopoverProps) => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<Tags | "">("");
   const [tags, setTags] = useState<Tags>({ ...props });
 
   const tagMap = Object.entries(TAG_CONFIG).reduce(
