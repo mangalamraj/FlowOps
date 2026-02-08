@@ -6,9 +6,9 @@ from pathlib import Path
 import json
 from fastapi import FastAPI, UploadFile, File, Body
 from services.walmartServices.pdf_parser import extract_pages
-from services.walmartServices.llm_rules import batch_by_page, extract_rules_from_batch, dedupe_rules, filter_rules_by_sku, classify_rules, validate_dimensions, process_rules_background
+from services.walmartServices.llm_rules import  process_rules_background
 from utils.walmartUtils.extractorObject import EXTRACTOBJECT
-from db.index import connect_db, close_db, getpdf_headings, getpdf_details, getsku_rules, addsku_rules, changeorder_status, checkorder_status
+from db.index import connect_db, close_db, getsku_rules, changeorder_status, checkorder_status
 from fastapi import BackgroundTasks
 
 
@@ -51,6 +51,7 @@ async def get_rules(
     tags = data['labelData']['tags']
     sku = data['labelData']['sku']
     orderid = data["labelData"]['orderid']
+    await changeorder_status(orderid, "rules pending")
     print("PROCESS STARTED FOR RULE EXTRACTION:", orderid)
 
 
