@@ -191,6 +191,7 @@ async def process_rules_background(
     try:
         pagenumbers = []
         headings = []
+        await changeorder_status(orderid, "rules pending")
 
         for key in tags:
             if key in EXTRACTOBJECT:

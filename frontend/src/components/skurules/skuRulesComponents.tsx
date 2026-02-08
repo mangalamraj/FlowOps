@@ -16,14 +16,17 @@ import { Spinner } from "../ui/spinner";
 
 const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
   let count = 0;
-  const [rules, setRules] = useState<Order>();
+  const [rules, setRules] = useState<any>({ rules: [] });
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const router = useRouter();
 
   function handleSubmit() {
     const found = rules?.dimensionrules?.some(
-      (el) => el.reference === "edge" || "bottom" || "center",
+      (el: any) =>
+        el.reference === "edge" ||
+        el.reference === "bottom" ||
+        el.reference === "center",
     );
     if (found) {
       router.push(`/uploadcarton/${orderid}`);
@@ -78,7 +81,7 @@ const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
           </div>
           <div>Please follow these instructions</div>
           <div className="flex flex-col gap-2">
-            {rules?.rules.slice(0, 10).map((rule, index) => (
+            {rules?.rules.slice(0, 10).map((rule: any, index: any) => (
               <Card key={index}>
                 <CardContent className="flex items-center gap-3 text-xl">
                   <Checkbox

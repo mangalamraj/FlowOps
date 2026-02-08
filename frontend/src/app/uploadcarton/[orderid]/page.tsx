@@ -7,8 +7,9 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 
-const UploadImage = ({ params }: { params: { orderid: string } }) => {
-  const { orderid }: { orderid: string } = params;
+const UploadImage = ({ params }: { params: Promise<{ orderid: string }> }) => {
+  const { orderid } = React.use(params);
+  console.log(orderid);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any[]>([]);

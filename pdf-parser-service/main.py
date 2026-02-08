@@ -51,7 +51,6 @@ async def get_rules(
     tags = data['labelData']['tags']
     sku = data['labelData']['sku']
     orderid = data["labelData"]['orderid']
-    await changeorder_status(orderid, "rules pending")
     print("PROCESS STARTED FOR RULE EXTRACTION:", orderid)
 
 
