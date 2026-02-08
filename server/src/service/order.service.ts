@@ -130,3 +130,12 @@ export const getLablesService = async (orderid: string) => {
   }
   return result.rows;
 };
+
+export const getDimensionService = async (orderid: string) => {
+  const dbQuery = `SELECT dimensions FROM orders WHERE orderid = $1`;
+  const result = await query(dbQuery, [orderid]);
+  if (result.rowCount == 0) {
+    throw new Error(`No dimension rules found for orderid ${orderid}`);
+  }
+  return result.rows;
+};

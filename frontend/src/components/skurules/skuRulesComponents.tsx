@@ -22,7 +22,12 @@ const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
   const router = useRouter();
 
   function handleSubmit() {
-    router.push(`/uploadcarton/${orderid}`);
+    const found = rules?.dimensionrules?.some(
+      (el) => el.reference === "edge" || "bottom" || "center",
+    );
+    if (found) {
+      router.push(`/uploadcarton/${orderid}`);
+    }
   }
   function handleCheck() {
     count++;

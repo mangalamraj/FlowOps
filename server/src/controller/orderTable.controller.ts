@@ -4,6 +4,7 @@ import { parse } from "fast-csv";
 import {
   addTagsService,
   getAllOrdersService,
+  getDimensionService,
   getLablesService,
   uploadOrdersService,
 } from "../service/order.service";
@@ -123,5 +124,18 @@ export const getRules = async (req: Request, res: Response) => {
     res.status(200).json(rulesData.data);
   } catch (err) {
     console.log("Error getting rules", err);
+  }
+};
+
+export const getDimensions = async (req: Request, res: Response) => {
+  const orderid = getStringQuery(req.query.orderid);
+  try {
+    let data;
+    if (orderid) {
+      data = await getDimensionService(orderid);
+    }
+    res.status(200).json(data?.[0]);
+  } catch (err) {
+    console.log("Error while getting the dimension", err);
   }
 };

@@ -41,3 +41,4 @@ async def detect_label(file: UploadFile = File(...)):
             "bottom_pct": (h - y2) / h
         }
     }
+

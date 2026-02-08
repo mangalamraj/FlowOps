@@ -84,7 +84,7 @@ def dedupe_rules(extracted_batches: List[Dict]) -> List[Dict]:
 
     return final_rules
 
-
+# Remove gstin rules and also write the prompt for gstin rules and return(abhi nahi karna hai kyuki i dont want fuck it cause its working!)
 async def filter_rules_by_sku(rules: List[Dict], sku: str) -> List[Dict]:
     rule_texts = [r["rule"] for r in rules]
 
