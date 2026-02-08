@@ -15,7 +15,6 @@ const SkuRulesPage = async ({
   }>;
 }) => {
   const { orderid } = await params;
-  console.log("hii2", orderid);
   return (
     <div className="container mx-auto mt-10 flex flex-col gap-2">
       <div className="text-2xl font-semibold">{orderid}: Rules</div>

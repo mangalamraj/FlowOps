@@ -61,6 +61,7 @@ const TableContainer = () => {
   const [counts, setCount] = useState({
     verified: 0,
     pending: 0,
+    failed: 0,
     notverified: 0,
     parseFallbackField: 0,
   });

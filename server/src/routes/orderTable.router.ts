@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addTags,
   getAllOrders,
+  getDimensions,
   getRules,
   uploadOrders,
 } from "../controller/orderTable.controller";
@@ -13,5 +14,6 @@ router.get("/all", getAllOrders);
 router.post("/upload", upload.single("file"), uploadOrders);
 router.post("/addTags", addTags);
 router.get("/getrules", getRules);
+router.get("/getdimensions", getDimensions);
 
 export default router;

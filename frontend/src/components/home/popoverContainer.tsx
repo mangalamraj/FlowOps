@@ -61,7 +61,7 @@ const popOverData = Object.keys(TAG_CONFIG);
 type PopoverProps = Tags;
 
 const PopoverContentComponent = (props: PopoverProps) => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<keyof typeof TAG_CONFIG | "">("");
   const [tags, setTags] = useState<Tags>({ ...props });
 
   const tagMap = Object.entries(TAG_CONFIG).reduce(
@@ -96,7 +96,10 @@ const PopoverContentComponent = (props: PopoverProps) => {
   return (
     <>
       <div className="flex justify-between mb-4">
-        <Select value={input} onValueChange={setInput}>
+        <Select
+          value={input}
+          onValueChange={(value) => setInput(value as keyof typeof TAG_CONFIG)}
+        >
           <SelectTrigger className="w-55">
             <SelectValue placeholder="Select Tags" />
           </SelectTrigger>
