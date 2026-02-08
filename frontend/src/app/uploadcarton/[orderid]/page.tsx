@@ -8,7 +8,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 
 const UploadImage = ({ params }: { params: { orderid: string } }) => {
-  const { orderid }: { orderid: string } = React.use(params);
+  const { orderid }: { orderid: string } = params;
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any[]>([]);
