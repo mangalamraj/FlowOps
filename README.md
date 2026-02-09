@@ -1,7 +1,7 @@
 # FlowOps
 Present your orders smartly.
 
-FlowOps is a TypeScript-first monorepo that helps present and manage orders with a clean Next.js frontend and a TypeScript + Express backend. The repository is structured into two main parts:
+FlowOps is a TypeScript-first project that helps present and manage orders with a clean Next.js frontend and a TypeScript + Express backend. The repository is structured into two main parts:
 
 - `frontend/` — the Next.js client application (TypeScript) using Tailwind CSS and shadcn/ui
 - `server/` — the API/backend (Node + Express + TypeScript)
