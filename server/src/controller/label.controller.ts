@@ -6,7 +6,10 @@ import {
   pctToInches,
   verifyBarcodePositionRules,
 } from "../service/labelverification.service";
-import { getDimensionService } from "../service/order.service";
+import {
+  changeStatusService,
+  getDimensionService,
+} from "../service/order.service";
 
 async function uploadLabel(req: Request, res: Response) {
   const file = req.files?.image as any;
@@ -31,7 +34,14 @@ async function uploadLabel(req: Request, res: Response) {
       distIn,
       dimensionRules,
     );
-
+    const failed = verificationResults.filter(
+      (result) => result.status === "FAIL",
+    );
+    if (failed.length > 0) {
+      await changeStatusService(orderid, "failed");
+    } else {
+      await changeStatusService(orderid, "verified");
+    }
     return res.status(200).json(verificationResults);
   } catch (err) {
     console.log("Error getting the result", err);
