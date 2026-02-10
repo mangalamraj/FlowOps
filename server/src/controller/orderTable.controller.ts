@@ -3,6 +3,7 @@ import fs from "fs";
 import { parse } from "fast-csv";
 import {
   addTagsService,
+  changeStatusService,
   getAllOrdersService,
   getDimensionService,
   getLablesService,
@@ -137,5 +138,21 @@ export const getDimensions = async (req: Request, res: Response) => {
     res.status(200).json(data?.[0]);
   } catch (err) {
     console.log("Error while getting the dimension", err);
+  }
+};
+
+export const setVerificationStatus = async (req: Request, res: Response) => {
+  const { orderid, status } = req.body;
+  try {
+    let data;
+    if (orderid && status) {
+      data = changeStatusService(orderid, status);
+    }
+    res.status(200).json({ message: "Status changed sucessfully." });
+  } catch (err) {
+    console.log("Error while updating the Verification status", err);
+    res
+      .status(500)
+      .json({ message: "error while setting verification status" });
   }
 };

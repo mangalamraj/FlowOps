@@ -1,3 +1,4 @@
+"use client";
 import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -13,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Badge } from "../ui/badge";
+import { useRouter } from "next/navigation";
 
 export type Tags = {
   orderid: string;
@@ -63,7 +65,7 @@ type PopoverProps = Tags;
 const PopoverContentComponent = (props: PopoverProps) => {
   const [input, setInput] = useState<keyof typeof TAG_CONFIG | "">("");
   const [tags, setTags] = useState<Tags>({ ...props });
-
+  const router = useRouter();
   const tagMap = Object.entries(TAG_CONFIG).reduce(
     (acc, [label, key]) => {
       acc[label] = tags[key];
@@ -84,10 +86,17 @@ const PopoverContentComponent = (props: PopoverProps) => {
     e.preventDefault();
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/table/addTags`, {
-        tags,
-        orderid: props.orderid,
-      });
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/table/addTags`,
+        {
+          tags,
+          orderid: props.orderid,
+        },
+      );
+      console.log(response.status);
+      if (response?.status === 200) {
+        window.location.reload();
+      }
     } catch (e) {
       console.error("Error while updating/inserting the tags");
     }

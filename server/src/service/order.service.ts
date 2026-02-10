@@ -139,3 +139,12 @@ export const getDimensionService = async (orderid: string) => {
   }
   return result.rows;
 };
+
+export const changeStatusService = async (orderid: string, status: string) => {
+  const dbQuery = `UPDATE orders SET status = $1 WHERE orderid = $2`;
+  const result = await query(dbQuery, [status, orderid]);
+  if (result.rowCount == 0) {
+    throw new Error(`Error while updating the verification status.${orderid}`);
+  }
+  return result.rows;
+};

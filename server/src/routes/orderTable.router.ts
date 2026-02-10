@@ -4,6 +4,7 @@ import {
   getAllOrders,
   getDimensions,
   getRules,
+  setVerificationStatus,
   uploadOrders,
 } from "../controller/orderTable.controller";
 import { upload } from "../middleware/multer.middlware";
@@ -15,5 +16,6 @@ router.post("/upload", upload.single("file"), uploadOrders);
 router.post("/addTags", addTags);
 router.get("/getrules", getRules);
 router.get("/getdimensions", getDimensions);
+router.post("/setstatus", setVerificationStatus);
 
 export default router;

@@ -97,7 +97,7 @@ export const handleOpenAiInput = async (req: any, res: any) => {
             - "ORD*" → orderid
             - "SKU*" → sku
             - Warehouse codes (DEL-*, BLR-*, MUM-*, etc) → warehouse
-            - shipped | pending | delayed | rejected → status
+            -  verified (sku rules are verified) | rules pending (rules are yet to be fetched from llm) | sku rules not veried (rules are not added by llm) | Rules Added (Rules are added by llm) | failed (rules verification failed) → status
             - date or date-like → shippedat
 
             Format:
