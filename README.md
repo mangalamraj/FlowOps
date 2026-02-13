@@ -51,7 +51,7 @@ Check if the orders delivery is as per the rules using ai. We help you not to go
 - `frontend/` — Next.js application (TypeScript). UI, routing, API client, styles.
 - `server/` — Aggregator service containing endpoints for label detection service and pdf parsing service.
 - `pdf-parsing-service/` - parses long walmart pdf into sku specific rules
-- - `label-detection-service/` - detects the faulty label label placed on your carton so that you fix your shipment asap.
+- `label-detection-service/` - detects the faulty label label placed on your carton so that you fix your shipment asap.
 - `README.md` — this file
 
 ---
