@@ -1,5 +1,6 @@
 # FlowOps
 Check if the orders delivery is as per the rules using ai. We help you not to go throught the long Walmart pdf(200 pages). Our AI takes out rules for your sku and make you a rule checklist. We have also our Computer vision model checking your label placement on your carton
+We Also have our chat bot that queries our postgres database to take out the sku status if not able to find one.
 
 - `frontend/` — the Next.js client application (TypeScript) using Tailwind CSS and shadcn/ui
 - `server/` — the API/backend (Node + Express + TypeScript)
@@ -30,7 +31,7 @@ Check if the orders delivery is as per the rules using ai. We help you not to go
 - Next.js frontend with TypeScript
 - Tailwind CSS for utility-first styling
 - shadcn/ui components for a consistent design system
-- Express + Node.js server aggregator written in TypeScript
+- Express + Node.js server aggregator written in TypeScript + postgres for storing the sku and pdf details
 - Python + openai gpt-4omini + pymupdf for rules parsing
 - python + yolov8 for label detection
 
