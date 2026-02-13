@@ -1,6 +1,5 @@
 # FlowOps
 Check if the orders delivery is as per the rules using ai. We help you not to go throught the long Walmart pdf(200 pages). Our AI takes out rules for your sku and make you a rule checklist. We have also our Computer vision model checking your label placement on your carton
-FlowOps is a TypeScript-first project that helps present and manage orders with a clean Next.js frontend and a TypeScript + Express backend. The repository is structured into two main parts:
 
 - `frontend/` — the Next.js client application (TypeScript) using Tailwind CSS and shadcn/ui
 - `server/` — the API/backend (Node + Express + TypeScript)
