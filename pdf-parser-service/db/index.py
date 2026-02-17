@@ -20,7 +20,8 @@ async def connect_db():
             CREATE TABLE IF NOT EXISTS orgData (
                 id BIGSERIAL PRIMARY KEY,
                 orgname TEXT NOT NULL,
-                headings JSONB NOT NULL
+                headings JSONB NOT NULL,
+                fullpdfdata JSONB
             );
         """)
         print("TABLE READY")

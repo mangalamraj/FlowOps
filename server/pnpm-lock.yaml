@@ -56,6 +56,9 @@ importers:
       joi:
         specifier: ^18.0.2
         version: 18.0.2
+      kafkajs:
+        specifier: ^2.2.4
+        version: 2.2.4
       multer:
         specifier: ^2.0.2
         version: 2.0.2
@@ -493,6 +496,10 @@ packages:
   joi@18.0.2:
     resolution: {integrity: sha512-RuCOQMIt78LWnktPoeBL0GErkNaJPTBGcYuyaBvUOQSpcpcLfWrHPPihYdOGbV5pam9VTWbeoF7TsGiHugcjGA==}
     engines: {node: '>= 20'}
+
+  kafkajs@2.2.4:
+    resolution: {integrity: sha512-j/YeapB1vfPT2iOIUn/vxdyKEuhuY2PxMBvf5JWux6iSaukAccrMtXEY/Lb7OvavDhOWME589bpLrEdnVHjfjA==}
+    engines: {node: '>=14.0.0'}
 
   lodash.escaperegexp@4.1.2:
     resolution: {integrity: sha512-TM9YBvyC84ZxE3rgfefxUWiQKLilstD6k7PTGt6wfbtXF8ixIJLOL3VYyV/z+ZiPLsVxAsKAFVwWlWeb2Y8Yyw==}
@@ -1333,6 +1340,8 @@ snapshots:
       '@hapi/tlds': 1.1.4
       '@hapi/topo': 6.0.2
       '@standard-schema/spec': 1.1.0
+
+  kafkajs@2.2.4: {}
 
   lodash.escaperegexp@4.1.2: {}
 
