@@ -10,6 +10,7 @@ import {
   uploadOrdersService,
 } from "../service/order.service";
 import axios from "axios";
+import { sendMessage } from "../kafka-producer/producer";
 
 type OrderCsvRow = {
   order_id: string;
@@ -119,6 +120,7 @@ export const getRules = async (req: Request, res: Response) => {
     const { orderid, ...newTags } = Existingtags;
     labelData.tags = newTags;
     labelData.orderid = order_id;
+    sendMessage(labelData);
     const rulesData = await axios.post("http://localhost:8001/get-rules", {
       labelData,
     });
