@@ -15,16 +15,17 @@ export function pctToInches(dimensions: any) {
 export function verifyBarcodePositionRules(distIn: any, rules: any[]) {
   const results = [];
   const filteredRules = rules[0].dimensions.filter(
-    (rule) =>
+    (rule: any) =>
       rule.entity === "barcode" &&
-      ["edge", "bottom", "left"].includes(rule.reference),
+      ["edge", "bottom", "left", "height"].includes(rule.reference),
   );
+  console.log(JSON.stringify(rules));
   for (const rule of filteredRules) {
     const ref = rule.reference;
     const required = rule.value;
     let actual: number;
 
-    if (ref === "edge" || "left" || "bottom") {
+    if (ref === "edge" || "left" || "bottom" || "height") {
       actual = Math.min(
         distIn.left_in,
         distIn.right_in,
@@ -37,7 +38,7 @@ export function verifyBarcodePositionRules(distIn: any, rules: any[]) {
     const passed = actual >= required;
 
     results.push({
-      rule: `${ref} minimum distance ${required} in`,
+      rule: ` minimum distance ${required} in`,
       status: passed ? "PASS" : "FAIL",
       actual: Number(actual.toFixed(2)),
       required,

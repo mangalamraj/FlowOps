@@ -12,7 +12,9 @@ import {
 } from "../service/order.service";
 
 async function uploadLabel(req: Request, res: Response) {
-  const file = req.files?.image as any;
+  const file = !Array.isArray(req.files)
+    ? (req.files?.image as any)
+    : undefined;
   const orderid = req.body.orderid;
   if (!file) {
     return res.status(400).json({ error: "No file uploaded" });
