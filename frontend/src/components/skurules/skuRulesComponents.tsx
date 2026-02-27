@@ -94,7 +94,7 @@ const SkuRulesComponents = ({ orderid }: { orderid: string }) => {
             ))}
           </div>
           <Button
-            className="mt-4 cursor-pointer"
+            className="mt-4 cursor-pointer mb-8"
             onClick={handleSubmit}
             disabled={!disabled}
           >

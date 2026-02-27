@@ -7,3 +7,4 @@ openai>=1.12.0
 httpx>=0.27.0
 pymupdf
 asyncpg
+kafka-python

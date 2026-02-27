@@ -10,8 +10,17 @@ from services.walmartServices.llm_rules import  process_rules_background
 from utils.walmartUtils.extractorObject import EXTRACTOBJECT
 from db.index import connect_db, close_db, getsku_rules, changeorder_status, checkorder_status
 from fastapi import BackgroundTasks
+from kafka import KafkaConsumer 
+import json
 
-
+consumer = KafkaConsumer(
+    'rule-topic',
+    bootstrap_servers ="localhost:9092",
+    auto_offset_reset="earliest",   # read from beginning if no offset
+    enable_auto_commit=True,
+    group_id="rules-consumer-group",
+    value_deserializer=lambda m: json.loads(m.decode("utf-8")),
+)
 
 ENV_PATH = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=ENV_PATH)
